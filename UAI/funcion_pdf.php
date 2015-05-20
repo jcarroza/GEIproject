@@ -17,13 +17,10 @@
 	$PAGE->set_context ( $context );
 	$PAGE->set_url ( $baseurl );
 	$PAGE->set_pagelayout ( 'standard' );
-	$PAGE->set_title ( get_string ( 'title', 'preguntas_export' ) );
-	$PAGE->set_heading ( get_string ( 'title', 'preguntas_export' ) );
-	$PAGE->navbar->add ( get_string ( 'quuestion', 'preguntas_export' ) );
+	
 	$PAGE->navbar->add ( 'funcion_pdf', 'reservar.php' );
 	
 	echo $OUTPUT->header (); // Imprime el header
-	echo $OUTPUT->heading ( get_string ( 'title', 'preguntas_export' ) );
 	
 	
 	
