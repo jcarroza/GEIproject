@@ -53,24 +53,24 @@ echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
 $questionbank->display('questions', $pagevars['qpage'], $pagevars['qperpage'],
         $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'],
         $pagevars['qbshowtext']);
-echo "</div>\n";
-
 
 
 echo"	<html>
 			<form action='UAI/funcion_pdf.php' method='post'>";
 
+//funcion filtro de preguntas
 
+echo "<h2>Generador de pruebas</h2>";
 
-
-
-//echo "Vista previa de la exportacion!:<br>$texto";
-echo "
+echo "Respuestas Simples:   <input type='number' name='rsimple' min='0' max='20'> <br>
+Respues Extendidas:   <input type='number' name='rextendida' min='0' max='20'> <br>
+Seleccion Multiple:   <input type='number' name='rmultiple' min='0' max='20'> <br>
+Verdadero y Falso:   <input type='number' name='rvof' min='0' max='20'> <br>
 <input type='submit' value='Vista previa'>";
 
 
 echo"</form>
 			</html>";
 
-
+echo "</div>\n";
 echo $OUTPUT->footer();

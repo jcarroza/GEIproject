@@ -7,7 +7,7 @@
 	require('config.php');
 	require_once($CFG->libdir . '/pdflib.php');
 	
-
+	
 	global $DB, $USER, $CFG;
 	
 	require_login (); // Requiere estar log in
@@ -22,10 +22,17 @@
 	
 	echo $OUTPUT->header (); // Imprime el header
 	
+	//variable que relaciona la pagina edit.php con la cantidad requerida de preguntas
+	$rsimple = $_POST['rsimple'];
+	$rextendida = $_POST['rextendida'];
+	$rmultiple = $_POST['rmultiple'];
+	$rvof = $_POST['rvof'];
 	
-	
-	
-	
+	//variable para limitar la cantidad de preguntas por categoria 
+	$cantsimple=1;
+	$cantextendida=1;
+	$cantmultiple=1;
+	$cantvof=1;
 	
 	TCPDF_FONTS::addTTFfont('/full_path_to/ARIALUNI.TTF', 'TrueTypeUnicode');
 	
@@ -35,36 +42,104 @@
 	
 	$categorias = get_categories_for_contexts($contextocurso->id,  'name ASC');
 	
+	$cant=1;
 	$i=1;
 	$imp=0;
+	
+//arreglo que agrupa las categorias, preguntas y respuestas
+	
 	foreach($categorias as $categoria) {
-		echo $categoria->name;
+		echo "<H1 align='center'>  $categoria->name </H1> <br>";
 		$imp="$categoria->name <br>";
 		$preguntas = $DB->get_records('question', array('category'=>$categoria->id));
+		shuffle($preguntas);
 		foreach($preguntas as $pregunta) {
-			echo $pregunta->questiontext;
-			$imp="$imp
-			La pregunta $i es $pregunta->questiontext las respuestas son:";
-			$i++;
-			$respuestas = $DB->get_records('question_answers', array('question'=>$pregunta->id));
-					foreach($respuestas as $respuesta) {
+			
+//funcion de cantidad de preguntas por tipo de pregunta	
+			if ($cantsimple <= $rsimple && $pregunta->qtype=="numerical" )		{
+						echo "<h4>Pregunta $cant $pregunta->questiontext </h4>";
+								$imp="$imp
+								 La pregunta $i es $pregunta->questiontext <br> las respuestas son:";
+									$i++;
+									$respuestas = $DB->get_records('question_answers', array('question'=>$pregunta->id));
+											echo "<blockquote>";
+											foreach($respuestas as $respuesta) {
+											echo "$respuesta->answer <br>";
+										$imp="$imp <br> $respuesta->answer  ";
+							
+									}
+									echo "</blockquote>";
+									echo "<HR align='CENTER' size='2' width='400' color='black' noshade>";
+									$imp="$imp <br><hr><br>";
+			$cant++;
+			$cantsimple++;							}
+			
+			
+			if ($cantextendida <= $rextendida && $pregunta->qtype=="tests")		{
+				echo "<h4>Pregunta $cant $pregunta->questiontext </h4>";
+				$imp="$imp
+				La pregunta $i es $pregunta->questiontext <br> las respuestas son:";
+				$i++;
+				$respuestas = $DB->get_records('question_answers', array('question'=>$pregunta->id));
+				echo "<blockquote>";
+				foreach($respuestas as $respuesta) {
 					echo "$respuesta->answer <br>";
-				$imp="$imp <br> $respuesta->answer  ";
+					$imp="$imp <br> $respuesta->answer  ";
+						
+				}
+				echo "</blockquote>";
+				echo "<HR align='CENTER' size='2' width='400' color='black' noshade>";
+				$imp="$imp <br><hr><br>";
+				$cant++;						
+			$cantextendida++;	}
+				
+				
+				if ($cantmultiple <= $rmultiple && $pregunta->qtype=="multiplechoice")		{
+					echo "<h4>Pregunta $cant $pregunta->questiontext </h4>";
+					$imp="$imp
+					La pregunta $i es $pregunta->questiontext <br> las respuestas son:";
+					$i++;
+					$respuestas = $DB->get_records('question_answers', array('question'=>$pregunta->id));
+					echo "<blockquote>";
+					foreach($respuestas as $respuesta) {
+						echo "$respuesta->answer <br>";
+						$imp="$imp <br> $respuesta->answer  ";
+							
+					}
+					echo "</blockquote>";
+					echo "<HR align='CENTER' size='2' width='400' color='black' noshade>";
+					$imp="$imp <br><hr><br>";
+					$cant++;							
+				$cantmultiple++;}
+					
+					
+					if ($cantvof <= $rvof && $pregunta->qtype=="truefalse")		{
+						echo "<h4>Pregunta $cant $pregunta->questiontext </h4>";
+						$imp="$imp
+						La pregunta $i es $pregunta->questiontext <br> las respuestas son:";
+						$i++;
+						$respuestas = $DB->get_records('question_answers', array('question'=>$pregunta->id));
+						echo "<blockquote>";
+						foreach($respuestas as $respuesta) {
+							echo "$respuesta->answer <br>";
+							$imp="$imp <br> $respuesta->answer  ";
+								
+						}
+						echo "</blockquote>";
+						echo "<HR align='CENTER' size='2' width='400' color='black' noshade>";
+						$imp="$imp <br><hr><br>";
+						$cant++;
+					$cantvof++;							}
+		}
 	
-			}
-			$imp="$imp <br><hr><br>";
-			}
-			}
+	}
 	
 			echo"	<html>
 			<form action='funcion_pdf_exportar.php' method='post'>";
 	
-	
-	
 			$nombre="guia $categoria->name .pdf";
-	echo "LA VARIABLE IMP SE IMPRIME AQUI: <br> $imp <hr>";
-	
-		//echo "Vista previa de la exportacion!:<br>$texto";
+
+//funcion de impresion de pdf 	
 		echo "<br><input type='hidden' name='texto_pdf' value='$imp'>
 			<input type='hidden' name='nombre_pdf' value='$nombre'>
 			<input type='submit' value='Exportar PDF'>";
@@ -73,47 +148,7 @@
 			echo"</form>
 			</html>";
 	
-	
-	
 	echo $OUTPUT->footer (); // imprime el footer
 	
 	
-	
-	
-	
-	
-	echo '<hr>';
-	echo "AYUDA PARA GUIARSE EN LOS ARRAY: <hr>";
-	echo $categoria->name;//&'<br>';
-	
-	echo "<hr>";
-	echo $pregunta->name;
-	echo " (Tipo de pregunta: ";
-	echo $pregunta->qtype;
-	echo ")<br>";
-	echo $pregunta->questiontext;
-	echo "<br>";
-	echo $pregunta->generalfeedback;
-	echo "<br>";
-	echo $respuesta->answer;
-	echo "<hr>";
-	echo "VAR_DUMP DE RESPUESTA<br>";
-	var_dump($respuesta);
-	echo "<hr>";
-	echo "VAR_DUMP DE PREGUNTA<br>";
-	echo var_dump($pregunta);
-	echo "<hr>";
-	echo "VAR_DUMP DE CATEGORIA<br>";
-	var_dump($categoria);
-	echo "<hr>";
-	echo "VAR_DUMP DE PREGUNTAS<br>";
-	var_dump($preguntas);
-	echo "<hr>";
-	
-	
-	echo "$pregunta->name (Tipo de pregunta: $pregunta->qtype )<br>
-	$pregunta->questiontext <br>
-	$pregunta->generalfeedback <br>
-	$respuesta->answer <br>
-	   ";
-	
+			echo "</div>\n";	
