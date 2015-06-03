@@ -53,16 +53,18 @@ echo '<div class="questionbankwindow boxwidthwide boxaligncenter">';
 $questionbank->display('questions', $pagevars['qpage'], $pagevars['qperpage'],
         $pagevars['cat'], $pagevars['recurse'], $pagevars['showhidden'],
         $pagevars['qbshowtext']);
+echo "</div>\n";
 
 
+//obtengo el id del curso
+global $COURSE;
+$idcurse=$COURSE->id;
 echo"	<html>
 			<form action='UAI/funcion_pdf.php' method='post'>";
-
-//funcion filtro de preguntas
-
-echo "<h2>Generador de pruebas</h2>";
-
+//Envio las variable de cantidad de preguntas por tipo a funcion_pdf.php
+//Envio del id del curso de manera escondida
 echo "Respuestas Simples:   <input type='number' name='rsimple' min='0' max='20'> <br>
+		<input type='hidden' name='idcurse' value='$idcurse'> 
 Respues Extendidas:   <input type='number' name='rextendida' min='0' max='20'> <br>
 Seleccion Multiple:   <input type='number' name='rmultiple' min='0' max='20'> <br>
 Verdadero y Falso:   <input type='number' name='rvof' min='0' max='20'> <br>
@@ -72,5 +74,5 @@ Verdadero y Falso:   <input type='number' name='rvof' min='0' max='20'> <br>
 echo"</form>
 			</html>";
 
-echo "</div>\n";
+
 echo $OUTPUT->footer();
